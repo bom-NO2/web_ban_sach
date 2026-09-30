@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhà sách Lâm Tam Lục – Chính sách và liên hệ</title>
+<style>
+:root{--bg:#f3f6f4;--card:#fff;--ink:#16302b;--mute:#5d726d;--line:#d5e0dc;--accent:#1f6f5c;--accent-ink:#fff;--warn:#a4472b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c19;--card:#182a26;--ink:#e6f0ed;--mute:#9bb2ac;--line:#2b423d;--accent:#4fc0a3;--accent-ink:#0f1c19;--warn:#f0a084}}
+:root[data-theme="dark"]{--bg:#0f1c19;--card:#182a26;--ink:#e6f0ed;--mute:#9bb2ac;--line:#2b423d;--accent:#4fc0a3;--accent-ink:#0f1c19;--warn:#f0a084}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Be Vietnam Pro","Segoe UI",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px}
+h2{font-size:1.15rem;margin:0 0 10px}
+.sub{color:var(--mute);margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:10px 14px;cursor:pointer;font:inherit;color:inherit}
+.tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 16px;margin-bottom:12px}
+details{border-bottom:1px solid var(--line);padding:10px 0}
+details:last-child{border-bottom:0}
+summary{cursor:pointer;font-weight:600}
+details ul{margin:8px 0 4px;padding-left:20px;color:var(--mute)}
+details li{margin:4px 0}
+dl{display:grid;grid-template-columns:110px 1fr;gap:10px 12px;margin:12px 0}
+dt{color:var(--mute)}dd{margin:0}
+a{color:var(--accent)}
+.err{background:var(--card);border:1px dashed var(--warn);border-radius:10px;padding:20px;text-align:center;color:var(--warn)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Nhà sách Lâm Tam Lục</h1>
+  <p class="sub">Xem cách giao hàng, đổi trả và thông tin liên hệ. Bạn không cần đăng nhập.</p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabPolicy" aria-selected="true" aria-controls="panelPolicy">Giao hàng và đổi trả</button>
+    <button role="tab" id="tabContact" aria-selected="false" aria-controls="panelContact">Liên hệ</button>
+  </div>
+
+  <section id="panelPolicy" role="tabpanel" aria-labelledby="tabPolicy">
+    <div class="card" id="policy"></div>
+  </section>
+
+  <section id="panelContact" role="tabpanel" aria-labelledby="tabContact" hidden>
+    <div class="card" id="contact"></div>
+  </section>
+</main>
+
+<script>
+// Dữ liệu mẫu, thay bằng thông tin thật của cửa hàng.
+const POLICY=[
+ {title:"Giao hàng",items:[
+  "Nội thành TP.Hà Nội: 3-5 ngày làm việc.",
+  "Tỉnh thành khác: 7-10 ngày làm việc.",
+  "Phí giao hàng 30.000₫ (cho mỗi đơn), miễn phí cho đơn từ 1.000.000 ₫.",
+  "Thanh toán khi nhận hàng (COD) cho mọi đơn."]},
+ {title:"Điều kiện đổi trả",items:[
+  "Đổi trả trong 7 ngày kể từ khi nhận hàng.",
+  "Áp dụng khi sách lỗi in, thiếu trang hoặc giao sai ấn bản.",
+  "Sách còn nguyên trạng, kèm hóa đơn hoặc mã đơn."]},
+ {title:"Hoàn tiền",items:[
+  "Hoàn tiền trong 7-10 ngày làm việc sau khi cửa hàng nhận lại sách.",
+  "Cửa hàng chịu phí vận chuyển nếu lỗi do cửa hàng."]}
+];
+const CONTACT={
+  name:"Nhà sách Lâm Tam Lục",
+  phone:"0866747798",
+  email:"lehoanglam2007ss@gmail.com",
+  address:"47 Đại Mỗ, Quận Nam Từ Liêm, TP.Hà Nội",
+  hours:"8:00 – 17:00, thứ Hai đến thứ Chủ Nhật"
+};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ERR=t=>`<div class="err"><strong>Chưa tải được ${t}.</strong><br>Vui lòng tải lại trang hoặc gọi hotline để được hỗ trợ.</div>`;
+
+function renderPolicy(){
+  if(!POLICY||!POLICY.length){$("policy").outerHTML=`<div id="policy">${ERR("chính sách")}</div>`;return}
+  $("policy").innerHTML=POLICY.map((g,i)=>
+    `<details ${i===0?"open":""}><summary>${esc(g.title)}</summary><ul>${g.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`).join("");
+}
+function renderContact(){
+  const c=CONTACT;
+  if(!c||!(c.phone||c.email||c.address)){$("contact").outerHTML=`<div id="contact">${ERR("thông tin liên hệ")}</div>`;return}
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${v}</dd>`:"";
+  $("contact").innerHTML=`<h2 style="margin-top:14px">${esc(c.name)}</h2><dl>`+
+    row("Điện thoại",c.phone&&`<a href="tel:${esc(c.phone.replace(/\s/g,""))}">${esc(c.phone)}</a>`)+
+    row("Email",c.email&&`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)+
+    row("Địa chỉ",c.address&&esc(c.address))+
+    row("Giờ mở cửa",c.hours&&esc(c.hours))+`</dl>`;
+}
+function select(which){
+  const p=which==="policy";
+  $("panelPolicy").hidden=!p;$("panelContact").hidden=p;
+  $("tabPolicy").setAttribute("aria-selected",p);$("tabContact").setAttribute("aria-selected",!p);
+}
+$("tabPolicy").onclick=()=>select("policy");
+$("tabContact").onclick=()=>select("contact");
+renderPolicy();renderContact();
+</script>
+</body>
+</html>
